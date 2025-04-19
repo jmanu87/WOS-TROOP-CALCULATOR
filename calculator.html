@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<!-- saved from url=(0095)file:///C:/Users/jose.acevedo.MASBIMSTUDIOSL/Downloads/bear_hunt_calculator_final_complete.html -->
+<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <title>Troop Calculator - Bear Hunt</title>
+  <style>
+    body {
+      background: linear-gradient(to right, #001f3f, #0074D9);
+      color: white;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    .wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    @media (min-width: 768px) {
+      .wrapper {
+        flex-direction: row;
+      }
+    }
+    .column {
+      flex: 1;
+      max-width: 7cm;
+    }
+    label, select, input {
+      display: block;
+      margin: 10px 0;
+      width: 100%;
+    }
+    input[type="number"], select {
+      padding: 6px;
+      border-radius: 5px;
+      border: none;
+    }
+    button {
+      background-color: #FF851B;
+      color: white;
+      font-weight: bold;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #FF5733;
+    }
+    table {
+      width: 100%;
+      background: white;
+      color: black;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #f0f0f0;
+    }
+    .alerta {
+      color: red;
+      font-weight: bold;
+    }
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 0.9em;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+
+  <div style="width: 100%; max-height: 300px; overflow: hidden; margin-bottom: 20px;">
+    <img src="./Troop Calculator - Bear Hunt_files/5d2973c3-4766-4c62-a279-d349bd18879c.png" style="width: 100%;height: 100%;display: block;" alt="Bear Hunt Visual">
+  </div>
+
+  <div class="wrapper">
+    <div class="column">
+      <h2>General Configuration</h2>
+      <label>Total Infantry: <input type="number" id="infanteria"></label>
+      <label>Total Lancers: <input type="number" id="lanceros"></label>
+      <label>Total Marksmen: <input type="number" id="tiradores"></label>
+      <label>Deployment Capacity: <input type="number" id="capacidad" value="140000"></label>
+      <label>Number of Deployments (max 6): <input type="number" id="despliegues" min="1" max="6" value="6"></label>
+      <label>Do you want to enter a custom ratio?</label>
+      <input type="checkbox" id="customRatioCheck" onclick="toggleCustomRatio()">
+      <div id="manualRatio" style="display: none; margin-left: 10px;">
+        <label>Infantry %: <input type="number" id="customInf" value="10" min="0" max="100" oninput="autoComplete(&#39;customInf&#39;,&#39;customLan&#39;,&#39;customTir&#39;)"></label>
+        <label>Lancers %: <input type="number" id="customLan" value="20" min="0" max="100" oninput="autoComplete(&#39;customInf&#39;,&#39;customLan&#39;,&#39;customTir&#39;)"></label>
+        <label>Marksmen %: <input type="number" id="customTir" value="70" readonly=""></label>
+      </div>
+      <label>Ratio (Inf / Lan / Mark):</label>
+      <select id="ratio">
+        <option value="10,20,70">10 / 20 / 70</option>
+        <option value="10,10,80">10 / 10 / 80</option>
+        <option value="1,9,90">1 / 9 / 90</option>
+      </select>
+      <label>Are you Rally Leader?</label>
+      <input type="checkbox" id="rallyCheck" onclick="toggleRally()">
+    </div>
+
+    <div class="column" id="rallyConfig" style="display: block;">
+      <h2>Rally Configuration</h2>
+      <label>Rally Capacity: <input type="number" id="rCap" value="140000"></label>
+      <label>Do you want to enter a custom ratio?</label>
+      <input type="checkbox" id="rCustomRatioCheck" onclick="toggleCustomRallyRatio()">
+      <div id="manualRallyRatio" style="display: none; margin-left: 10px;">
+        <label>Infantry %: <input type="number" id="rCustomInf" value="10" min="0" max="100" oninput="autoComplete(&#39;rCustomInf&#39;,&#39;rCustomLan&#39;,&#39;rCustomTir&#39;)"></label>
+        <label>Lancers %: <input type="number" id="rCustomLan" value="20" min="0" max="100" oninput="autoComplete(&#39;rCustomInf&#39;,&#39;rCustomLan&#39;,&#39;rCustomTir&#39;)"></label>
+        <label>Marksmen %: <input type="number" id="rCustomTir" value="70" readonly=""></label>
+      </div>
+      <label>Rally ratio (Inf / Lan / Mark):</label>
+      <select id="rRatio">
+        <option value="10,20,70">10 / 20 / 70</option>
+        <option value="10,10,80">10 / 10 / 80</option>
+        <option value="1,9,90">1 / 9 / 90</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="acciones">
+    <button onclick="calcular()">Check troop distribution</button>
+  </div>
+  <div id="resultado"><table><tbody><tr><th>Deployment</th><th>Infantry</th><th>Lancers</th><th>Marksmen</th><th>Total</th><th>Note</th></tr><tr><td><b>Rally</b></td><td>14000</td><td>28000</td><td>98000</td><td>140000</td><td></td></tr><tr><td>1</td><td>6200</td><td>12400</td><td>56400</td><td>75000</td><td></td></tr><tr><td>2</td><td>6200</td><td>12400</td><td>56400</td><td>75000</td><td></td></tr><tr><td>3</td><td>6200</td><td>12400</td><td>56400</td><td>75000</td><td></td></tr><tr><td>4</td><td>6200</td><td>12400</td><td>56400</td><td>75000</td><td></td></tr><tr><td>5</td><td>6200</td><td>12400</td><td>56400</td><td>75000</td><td></td></tr></tbody></table></div>
+
+  <footer>
+    Troop Calculator created by Beerserker #1383 — All rights reserved.
+  </footer>
+
+  <script>
+    function toggleRally() {
+      const check = document.getElementById("rallyCheck").checked;
+      document.getElementById("rallyConfig").style.display = check ? "block" : "none";
+    }
+
+    function toggleCustomRatio() {
+      document.getElementById("manualRatio").style.display = document.getElementById("customRatioCheck").checked ? "block" : "none";
+    }
+
+    function toggleCustomRallyRatio() {
+      document.getElementById("manualRallyRatio").style.display = document.getElementById("rCustomRatioCheck").checked ? "block" : "none";
+    }
+
+    function autoComplete(id1, id2, id3) {
+      const v1 = parseInt(document.getElementById(id1).value) || 0;
+      const v2 = parseInt(document.getElementById(id2).value) || 0;
+      document.getElementById(id3).value = Math.max(0, 100 - (v1 + v2));
+    }
+
+    function getDistribution(useCustom, infId, lanId, tirId, selectId) {
+      if (document.getElementById(useCustom).checked) {
+        return [
+          parseInt(document.getElementById(infId).value),
+          parseInt(document.getElementById(lanId).value),
+          parseInt(document.getElementById(tirId).value)
+        ];
+      } else {
+        return document.getElementById(selectId).value.split(",").map(Number);
+      }
+    }
+
+    function calcular() {
+      let inf = parseInt(document.getElementById("infanteria").value);
+      let lan = parseInt(document.getElementById("lanceros").value);
+      let tir = parseInt(document.getElementById("tiradores").value);
+      let cap = parseInt(document.getElementById("capacidad").value);
+      let despl = parseInt(document.getElementById("despliegues").value);
+      let [ri, rl, rt] = getDistribution('customRatioCheck', 'customInf', 'customLan', 'customTir', 'ratio');
+
+      let resultado = "<table><tr><th>Deployment</th><th>Infantry</th><th>Lancers</th><th>Marksmen</th><th>Total</th><th>Note</th></tr>";
+
+      if (document.getElementById("rallyCheck").checked) {
+        let rCap = parseInt(document.getElementById("rCap").value);
+        let [rInfR, rLanR, rTirR] = getDistribution('rCustomRatioCheck', 'rCustomInf', 'rCustomLan', 'rCustomTir', 'rRatio');
+        let totalRatio = rInfR + rLanR + rTirR;
+
+        let rInf = Math.floor(rCap * rInfR / totalRatio);
+        let rLan = Math.floor(rCap * rLanR / totalRatio);
+        let rTir = rCap - rInf - rLan;
+
+        rInf = Math.min(rInf, inf); inf -= rInf;
+        rLan = Math.min(rLan, lan); lan -= rLan;
+        rTir = Math.min(rTir, tir); tir -= rTir;
+
+        let rTotal = rInf + rLan + rTir;
+        let nota = rTotal < rCap ? '<span class="alerta">Not enough troops!</span>' : "";
+
+        resultado += `<tr><td><b>Rally</b></td><td>${rInf}</td><td>${rLan}</td><td>${rTir}</td><td>${rTotal}</td><td>${nota}</td></tr>`;
+      }
+
+      const tiradoresPorDeployment = Math.floor(tir / despl);
+
+      for (let i = 1; i <= despl; i++) {
+        let nota = "";
+        let tTir = Math.min(tiradoresPorDeployment, cap);
+        tir -= tTir;
+        let restante = cap - tTir;
+
+        const totalRatio = ri + rl;
+        let lancerosIdeal = Math.floor((rl / totalRatio) * restante);
+        let tLan = Math.min(lancerosIdeal, lan);
+        lan -= tLan;
+        restante -= tLan;
+
+        let tInf = Math.min(restante, inf);
+        inf -= tInf;
+        restante -= tInf;
+
+        const total = tInf + tLan + tTir;
+
+        if (total < cap) {
+          nota = '<span class="alerta">Not enough troops!</span>';
+        }
+
+        resultado += `<tr><td>${i}</td><td>${tInf}</td><td>${tLan}</td><td>${tTir}</td><td>${total}</td><td>${nota}</td></tr>`;
+      }
+
+      resultado += "</table>";
+      document.getElementById("resultado").innerHTML = resultado;
+    }
+  </script>
+
+
+</body></html>
